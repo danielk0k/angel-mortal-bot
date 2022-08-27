@@ -80,6 +80,7 @@ def sendNonTextMessage(message, bot, chat_id) -> None:
     elif message.sticker:
         bot.send_sticker(
             sticker=message.sticker,
+            caption=message.caption,
             chat_id=chat_id
         )
     elif message.document:
@@ -97,31 +98,35 @@ def sendNonTextMessage(message, bot, chat_id) -> None:
     elif message.video_note:
         bot.send_video_note(
             video_note=message.video_note,
+            caption=message.caption,
             chat_id=chat_id
         )
     elif message.voice:
         bot.send_voice(
             voice=message.voice,
+            caption=message.caption,
             chat_id=chat_id
         )
     elif message.audio:
         bot.send_audio(
             audio=message.audio,
+            caption=message.caption,
             chat_id=chat_id
         )
     elif message.animation:
         bot.send_animation(
             animation=message.animation,
+            caption=message.caption,
             chat_id=chat_id
         )
 
 
 def send_msg_command(update: Update, context: CallbackContext) -> None:
     playerName = update.message.chat.username.lower()
-    message = angelOrMortal(playerName, message)
     if players[playerName].chat_id is None or players[playerName].partner.chat_id is None:
         return
-    message = angelOrMortal(playerName, update.message)
+    message = update.message
+    #messageText = angelOrMortal(playerName, update.message)
     if message.text:
         context.bot.send_message(
             text=message.text,
@@ -159,18 +164,18 @@ def reset_command(update: Update, context: CallbackContext) -> None:
     logger.info('Players have been reset.')
 
 
-def angelOrMortal(playerName, message):
+def angelOrMortal(playerName, message) -> str:
     if players[playerName].isAngel:
         if message.text:
-            message.text = '\U0001F47C' + message.text
+            message = '\U0001F47C' + message.text
         else:
-            message.caption = '\U0001F47C' + message.caption
+            message = '\U0001F47C' + message.caption
         return message
-    else:
+    if players[playerName].isAngel == False:
         if message.text:
-            message.text = '\U0001f476' + message.text
+            message = '\U0001F476' + message.text
         else:
-            message.caption = '\U0001f476' + message.caption
+            message = '\U0001F476' + message.caption
             return message
 
 
